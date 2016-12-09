@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Weather</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+
+    <!-- TODO: fragment_add_city.xml -->
+    <string name="search_et">Input city or county name</string>
+    <string name="search_btn">Search</string>
 </resources>
