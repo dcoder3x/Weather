@@ -1,6 +1,7 @@
 package com.hefeng.weather.db;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -37,5 +38,15 @@ public class AppSQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    public Cursor queryCity(String city) {
+        return getReadableDatabase().query(WeatherContract.CityColumns.TABLE_NAME,
+                null,
+                WeatherContract.CityColumns.CITY_EN + " = ? or " + WeatherContract.CityColumns.CITY_ZH + " = ? ",
+                new String[] {city, city},
+                null,
+                null,
+                null);
     }
 }

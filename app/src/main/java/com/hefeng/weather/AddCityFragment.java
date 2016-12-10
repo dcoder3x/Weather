@@ -4,9 +4,17 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.hefeng.weather.model.City;
+
+import java.util.ArrayList;
 
 
 /**
@@ -18,6 +26,8 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class AddCityFragment extends Fragment {
+
+    private static final String TAG = "AddCityFragment";
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -28,6 +38,10 @@ public class AddCityFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private CityInfoManager mCityInfoManager;
+    private ArrayList<City> mCities;
+    private EditText mSearchEt;
+    private Button mSearchBtn;
 
     public AddCityFragment() {
         // Required empty public constructor
@@ -58,13 +72,29 @@ public class AddCityFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        mCityInfoManager = new CityInfoManager(getContext());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_city, container, false);
+        View v = inflater.inflate(R.layout.fragment_add_city, container, false);
+        mSearchEt = (EditText) v.findViewById(R.id.search_et);
+        mSearchBtn = (Button) v.findViewById(R.id.search_btn);
+        mSearchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String search = mSearchEt.getText().toString();
+                mCities = mCityInfoManager.getSearchResult(search);
+                if (mCities == null) {
+                    Toast.makeText(getContext(), "get nothing!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), mCities.size()+ "!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

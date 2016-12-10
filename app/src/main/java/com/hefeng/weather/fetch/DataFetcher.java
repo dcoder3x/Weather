@@ -1,5 +1,6 @@
 package com.hefeng.weather.fetch;
 
+import android.content.ContentValues;
 import android.util.Log;
 
 import com.hefeng.weather.db.WeatherContract;
@@ -55,9 +56,9 @@ public class DataFetcher {
         return new String(getUrlBytes(urlSpec));
     }
 
-    public ArrayList<City> downloadAllCityInfo() {
+    public ArrayList<ContentValues> downloadAllCityInfo() {
         String result = "";
-        ArrayList<City> cityContainer = new ArrayList<>();
+        ArrayList<ContentValues> cityContainer = new ArrayList<>();
         try {
             result = getUrl(CITY_INFO_URL);
         } catch (IOException e) {
@@ -67,14 +68,16 @@ public class DataFetcher {
             JSONArray jsonArray = new JSONArray(result);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                City city = new City(jsonObject.getString(WeatherContract.CityColumns.ID),
-                        jsonObject.getString(WeatherContract.CityColumns.CITY_EN),
-                        jsonObject.getString(WeatherContract.CityColumns.CITY_ZH),
-                        jsonObject.getString(WeatherContract.CityColumns.PROVINCE_EN),
-                        jsonObject.getString(WeatherContract.CityColumns.PROVINCE_ZH),
-                        jsonObject.getString(WeatherContract.CityColumns.LEADER_EN),
-                        jsonObject.getString(WeatherContract.CityColumns.LEANDER_ZH));
-                cityContainer.add(city);
+                ContentValues values = new ContentValues();
+                values.put(WeatherContract.CityColumns.ID, jsonObject.getString(WeatherContract.CityColumns.ID));
+                values.put(WeatherContract.CityColumns.CITY_EN, jsonObject.getString(WeatherContract.CityColumns.CITY_EN));
+                values.put(WeatherContract.CityColumns.CITY_ZH, jsonObject.getString(WeatherContract.CityColumns.CITY_ZH));
+                values.put(WeatherContract.CityColumns.PROVINCE_EN, jsonObject.getString(WeatherContract.CityColumns.PROVINCE_EN));
+                values.put(WeatherContract.CityColumns.PROVINCE_EN, jsonObject.getString(WeatherContract.CityColumns.PROVINCE_ZH));
+                values.put(WeatherContract.CityColumns.LEADER_EN, jsonObject.getString(WeatherContract.CityColumns.LEADER_EN));
+                values.put(WeatherContract.CityColumns.LEANDER_ZH, jsonObject.getString(WeatherContract.CityColumns.LEANDER_ZH));
+
+                cityContainer.add(values);
             }
         } catch (JSONException e) {
             Log.e(TAG, "can't parse json data!", e);
