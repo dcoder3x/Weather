@@ -24,7 +24,9 @@ public class AppSQLiteHelper extends SQLiteOpenHelper {
             WeatherContract.CityColumns.PROVINCE_EN + " text, " +
             WeatherContract.CityColumns.PROVINCE_ZH + " text, " +
             WeatherContract.CityColumns.LEADER_EN + " text, " +
-            WeatherContract.CityColumns.LEANDER_ZH + " text)";
+            WeatherContract.CityColumns.LEANDER_ZH + " text, " +
+            WeatherContract.CityColumns.IS_ADDED + " integer default 0)";
+    private static final String SQL_CREATE_WEATHER = "";
 
     public AppSQLiteHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -33,6 +35,7 @@ public class AppSQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_CITY);
+        db.execSQL(SQL_CREATE_WEATHER);
     }
 
     @Override

@@ -57,7 +57,8 @@ public class CityInfoManager {
                     cursor.getString(cursor.getColumnIndex(WeatherContract.CityColumns.PROVINCE_EN)),
                     cursor.getString(cursor.getColumnIndex(WeatherContract.CityColumns.PROVINCE_ZH)),
                     cursor.getString(cursor.getColumnIndex(WeatherContract.CityColumns.LEADER_EN)),
-                    cursor.getString(cursor.getColumnIndex(WeatherContract.CityColumns.LEANDER_ZH)));
+                    cursor.getString(cursor.getColumnIndex(WeatherContract.CityColumns.LEANDER_ZH)),
+                    cursor.getInt(cursor.getColumnIndex(WeatherContract.CityColumns.IS_ADDED)));
             cities.add(city);
         }
         return cities;

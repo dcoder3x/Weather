@@ -8,8 +8,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hefeng.weather.model.City;
@@ -42,6 +49,7 @@ public class AddCityFragment extends Fragment {
     private ArrayList<City> mCities;
     private EditText mSearchEt;
     private Button mSearchBtn;
+    private ListView mSearchResultLv;
 
     public AddCityFragment() {
         // Required empty public constructor
@@ -80,6 +88,14 @@ public class AddCityFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_add_city, container, false);
+        mSearchResultLv = (ListView) v.findViewById(R.id.search_result_lv);
+        mSearchResultLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
+
         mSearchEt = (EditText) v.findViewById(R.id.search_et);
         mSearchBtn = (Button) v.findViewById(R.id.search_btn);
         mSearchBtn.setOnClickListener(new View.OnClickListener() {
@@ -88,8 +104,10 @@ public class AddCityFragment extends Fragment {
                 String search = mSearchEt.getText().toString();
                 mCities = mCityInfoManager.getSearchResult(search);
                 if (mCities == null) {
+                    mSearchResultLv.setAdapter(null);
                     Toast.makeText(getContext(), "get nothing!", Toast.LENGTH_SHORT).show();
                 } else {
+                    mSearchResultLv.setAdapter(new ResultListAdapter(getContext(), mCities));
                     Toast.makeText(getContext(), mCities.size()+ "!", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -134,5 +152,46 @@ public class AddCityFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    /**
+     * Search Result ListView adapter.
+     */
+    private class ResultListAdapter extends BaseAdapter {
+        private Context mContext;
+        private ArrayList<City> mArrayList;
+
+        public ResultListAdapter(Context context, ArrayList<City> arrayList) {
+            mContext = context;
+            mArrayList = arrayList;
+        }
+
+        @Override
+        public int getCount() {
+            return mArrayList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mArrayList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = getLayoutInflater(null).inflate(R.layout.city_list_item, null);
+            }
+            City city = (City) getItem(position);
+            TextView cityName = (TextView) convertView.findViewById(R.id.city_name_tv);
+            TextView superiorName = (TextView) convertView.findViewById(R.id.superior_name_tv);
+            cityName.setText(city.getCityZh());
+            superiorName.setText(city.getLeaderZh() + "," + city.getProvinceZh());
+            return convertView;
+        }
     }
 }

@@ -73,7 +73,7 @@ public class DataFetcher {
                 values.put(WeatherContract.CityColumns.CITY_EN, jsonObject.getString(WeatherContract.CityColumns.CITY_EN));
                 values.put(WeatherContract.CityColumns.CITY_ZH, jsonObject.getString(WeatherContract.CityColumns.CITY_ZH));
                 values.put(WeatherContract.CityColumns.PROVINCE_EN, jsonObject.getString(WeatherContract.CityColumns.PROVINCE_EN));
-                values.put(WeatherContract.CityColumns.PROVINCE_EN, jsonObject.getString(WeatherContract.CityColumns.PROVINCE_ZH));
+                values.put(WeatherContract.CityColumns.PROVINCE_ZH, jsonObject.getString(WeatherContract.CityColumns.PROVINCE_ZH));
                 values.put(WeatherContract.CityColumns.LEADER_EN, jsonObject.getString(WeatherContract.CityColumns.LEADER_EN));
                 values.put(WeatherContract.CityColumns.LEANDER_ZH, jsonObject.getString(WeatherContract.CityColumns.LEANDER_ZH));
 

@@ -20,5 +20,6 @@ public final class WeatherContract {
         public static final String PROVINCE_ZH = "provinceZh";
         public static final String LEADER_EN = "leaderEn";
         public static final String LEANDER_ZH = "leaderZh";
+        public static final String IS_ADDED = "isAdded";
     }
 }

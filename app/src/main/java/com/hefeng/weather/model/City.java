@@ -14,10 +14,12 @@ public class City {
     private String mProvinceZh;
     private String mLeaderEn;
     private String mLeaderZh;
+    private int mIsAdded;
+
 
     public City() {}
 
-    public City(String id, String cityEn, String cityZh, String provinceEn, String provinceZh, String leaderEn, String leaderZh) {
+    public City(String id, String cityEn, String cityZh, String provinceEn, String provinceZh, String leaderEn, String leaderZh, int isAdded) {
         mId = id;
         mCityEn = cityEn;
         mCityZh = cityZh;
@@ -25,6 +27,7 @@ public class City {
         mProvinceZh = provinceZh;
         mLeaderEn = leaderEn;
         mLeaderZh = leaderZh;
+        mIsAdded = isAdded;
     }
 
     public String getId() {
@@ -81,5 +84,13 @@ public class City {
 
     public void setLeaderZh(String leaderZh) {
         mLeaderZh = leaderZh;
+    }
+
+    public int getIsAdded() {
+        return mIsAdded;
+    }
+
+    public void setIsAdded(int isAdded) {
+        mIsAdded = isAdded;
     }
 }
