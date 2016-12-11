@@ -18,18 +18,21 @@ import java.util.ArrayList;
  *
  */
 
-public class CityInfoManager {
+public class SQLiteDataManager {
 
-    private static final String TAG = "CityInfoManager";
+    private static final String TAG = "SQLiteDataManager";
     private DataFetcher mDataFetcher;
     private AppSQLiteHelper mAppSQLiteHelper;
 
-    public CityInfoManager(Context context) {
+    public SQLiteDataManager(Context context) {
         mDataFetcher = new DataFetcher();
         mAppSQLiteHelper = new AppSQLiteHelper(context);
     }
 
-    public void StoreChinaCityInfo() {
+    /**
+     * store city info,just once.
+     */
+    public boolean StoreChinaCityInfo() {
         SQLiteDatabase db = mAppSQLiteHelper.getWritableDatabase();
         ArrayList<ContentValues> arrayList = mDataFetcher.downloadAllCityInfo();
         // TODO: store city info to SQLite.
@@ -38,7 +41,12 @@ public class CityInfoManager {
             db.insert(WeatherContract.CityColumns.TABLE_NAME, null, values);
         }
         db.close();
-        Log.i(TAG, "insert city info to sqlite.");
+        if (arrayList.size() > 0) {
+            Log.i(TAG, "insert city info to sqlite.");
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -61,6 +69,40 @@ public class CityInfoManager {
                     cursor.getInt(cursor.getColumnIndex(WeatherContract.CityColumns.IS_ADDED)));
             cities.add(city);
         }
+        cursor.close();
         return cities;
+    }
+
+    /**
+     * change table city, set isAdded 1
+     */
+    public void changeIsAdded(String id) {
+        ContentValues values = new ContentValues();
+        values.put(WeatherContract.CityColumns.IS_ADDED, 1);
+        mAppSQLiteHelper.getWritableDatabase()
+                .update(WeatherContract.CityColumns.TABLE_NAME,
+                        values,
+                        WeatherContract.CityColumns.ID + " = ? ",
+                        new String[] {id});
+    }
+
+    /**
+     * add weather data.
+     */
+    public boolean insertWeatherInfo(String id) {
+        SQLiteDatabase db = mAppSQLiteHelper.getWritableDatabase();
+        ContentValues values = mDataFetcher.fetchNowWeather(id);
+        if (values != null) {
+            db.insert(WeatherContract.WeaColumns.TABLE_NAME, null, values);
+            return true;
+        } else {
+            Log.e(TAG, "no weather info inserted.");
+            return false;
+        }
+
+    }
+
+    public Cursor queryWeather() {
+        return mAppSQLiteHelper.queryWeather();
     }
 }

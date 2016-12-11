@@ -26,7 +26,17 @@ public class AppSQLiteHelper extends SQLiteOpenHelper {
             WeatherContract.CityColumns.LEADER_EN + " text, " +
             WeatherContract.CityColumns.LEANDER_ZH + " text, " +
             WeatherContract.CityColumns.IS_ADDED + " integer default 0)";
-    private static final String SQL_CREATE_WEATHER = "";
+    private static final String SQL_CREATE_WEATHER = "create table " +
+            WeatherContract.WeaColumns.TABLE_NAME + "(" +
+            WeatherContract.WeaColumns._ID + " integer primary key autoincrement, " +
+            WeatherContract.WeaColumns.CITY_ID + " text not null, " +
+            WeatherContract.WeaColumns.CITY_NAME + " text, " +
+            WeatherContract.WeaColumns.LOC + " text, " +
+            WeatherContract.WeaColumns.UTC + " text, " +
+            WeatherContract.WeaColumns.CODE + " text, " +
+            WeatherContract.WeaColumns.TXT + " text, " +
+            WeatherContract.WeaColumns.TMP + " text, " +
+            WeatherContract.WeaColumns.DIR + " text)";
 
     public AppSQLiteHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -48,6 +58,16 @@ public class AppSQLiteHelper extends SQLiteOpenHelper {
                 null,
                 WeatherContract.CityColumns.CITY_EN + " = ? or " + WeatherContract.CityColumns.CITY_ZH + " = ? ",
                 new String[] {city, city},
+                null,
+                null,
+                null);
+    }
+
+    public Cursor queryWeather() {
+        return getReadableDatabase().query(WeatherContract.WeaColumns.TABLE_NAME,
+                null,
+                null,
+                null,
                 null,
                 null,
                 null);

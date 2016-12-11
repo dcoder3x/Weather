@@ -10,11 +10,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.FrameLayout;
 
-public class MainActivity extends AppCompatActivity implements AddCityFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements AddCityFragment.OnFragmentInteractionListener, WeatherFragment.OnFragmentInteractionListener {
 
+    public static final String BUNDLE_FROM = "com.hefeng.weather.from";
+    public static final String BUNDLE_INFO = "com.hefeng.weather.cityId";
     private static final String TAG = "MainActivity";
     public static final String IS_STORED_CITY_INFO = "com.hefeng.weather.IS_STORED_CITY_INFO";
-    private FrameLayout mFrameLayout;
     private FragmentManager fm;
 
     @Override
@@ -23,15 +24,25 @@ public class MainActivity extends AppCompatActivity implements AddCityFragment.O
         setContentView(R.layout.activity_main);
         fm = getSupportFragmentManager();
         new DownloadChinaCityInfo().execute();
-        mFrameLayout = (FrameLayout) findViewById(R.id.activity_main);
         fm.beginTransaction()
-                .add(R.id.activity_main, new AddCityFragment())
+                .add(R.id.activity_main, new WeatherFragment())
                 .commit();
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-
+    public void onFragmentInteraction(Bundle bundle) {
+        if (bundle.getString(BUNDLE_FROM, "").equals(AddCityFragment.TAG)) {
+            fm.beginTransaction()
+                    .hide(fm.findFragmentById(R.id.activity_main))
+                    .add(R.id.activity_main, WeatherFragment.newInstance(bundle.getString(BUNDLE_INFO)))
+                    .commit();
+        }
+        if (bundle.getString(BUNDLE_FROM, "").equals(WeatherFragment.TAG)) {
+            fm.beginTransaction()
+                    .hide(fm.findFragmentById(R.id.activity_main))
+                    .add(R.id.activity_main, new AddCityFragment())
+                    .commit();
+        }
     }
 
     private class DownloadChinaCityInfo extends AsyncTask<Void, Void, Void> {
@@ -40,11 +51,15 @@ public class MainActivity extends AppCompatActivity implements AddCityFragment.O
             SharedPreferences sharedPreferences = getSharedPreferences(IS_STORED_CITY_INFO, Context.MODE_PRIVATE);
             boolean isStored = sharedPreferences.getBoolean(IS_STORED_CITY_INFO, false);
             if (!isStored) {
-                CityInfoManager cim = new CityInfoManager(getApplicationContext());
-                cim.StoreChinaCityInfo();
-                sharedPreferences.edit()
-                        .putBoolean(IS_STORED_CITY_INFO, true)
-                        .apply();
+                SQLiteDataManager cim = new SQLiteDataManager(getApplicationContext());
+                if (cim.StoreChinaCityInfo()) {
+                    sharedPreferences.edit()
+                            .putBoolean(IS_STORED_CITY_INFO, true)
+                            .apply();
+                } else {
+                    Log.i(TAG, "can't store city info.");
+                }
+
             } else {
                 Log.i(TAG, "city info already exist!");
             }

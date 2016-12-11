@@ -4,18 +4,15 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +31,7 @@ import java.util.ArrayList;
  */
 public class AddCityFragment extends Fragment {
 
-    private static final String TAG = "AddCityFragment";
+    public static final String TAG = "AddCityFragment";
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -45,11 +42,12 @@ public class AddCityFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-    private CityInfoManager mCityInfoManager;
+    private SQLiteDataManager mSQLiteDataManager;
     private ArrayList<City> mCities;
     private EditText mSearchEt;
     private Button mSearchBtn;
     private ListView mSearchResultLv;
+
 
     public AddCityFragment() {
         // Required empty public constructor
@@ -80,7 +78,7 @@ public class AddCityFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        mCityInfoManager = new CityInfoManager(getContext());
+        mSQLiteDataManager = new SQLiteDataManager(getContext());
     }
 
     @Override
@@ -92,7 +90,21 @@ public class AddCityFragment extends Fragment {
         mSearchResultLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ImageView imageView = (ImageView) view.findViewById(R.id.city_selected);
+                //use position is right?
+                City city = mCities.get(position);
+                final String cityId = city.getId();
+                int isAdded = city.getIsAdded();
 
+                Bundle bundle = new Bundle();
+                bundle.putString(MainActivity.BUNDLE_FROM, TAG);
+                if (isAdded == 0) {
+                    imageView.setImageResource(R.drawable.ic_action_city);
+                    bundle.putString(MainActivity.BUNDLE_INFO, cityId);
+                    onButtonPressed(bundle);
+                } else {
+                    onButtonPressed(bundle);
+                }
             }
         });
 
@@ -102,7 +114,7 @@ public class AddCityFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String search = mSearchEt.getText().toString();
-                mCities = mCityInfoManager.getSearchResult(search);
+                mCities = mSQLiteDataManager.getSearchResult(search);
                 if (mCities == null) {
                     mSearchResultLv.setAdapter(null);
                     Toast.makeText(getContext(), "get nothing!", Toast.LENGTH_SHORT).show();
@@ -116,9 +128,9 @@ public class AddCityFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed(Bundle bundle) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onFragmentInteraction(bundle);
         }
     }
 
@@ -151,7 +163,7 @@ public class AddCityFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Bundle bundle);
     }
 
     /**
@@ -191,6 +203,10 @@ public class AddCityFragment extends Fragment {
             TextView superiorName = (TextView) convertView.findViewById(R.id.superior_name_tv);
             cityName.setText(city.getCityZh());
             superiorName.setText(city.getLeaderZh() + "," + city.getProvinceZh());
+            if (city.getIsAdded() == 1) {
+                ImageView imageView = (ImageView) convertView.findViewById(R.id.city_selected);
+                imageView.setImageResource(R.drawable.ic_action_city);
+            }
             return convertView;
         }
     }

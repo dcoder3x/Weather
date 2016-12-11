@@ -17,6 +17,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import javax.net.ssl.HttpsURLConnection;
+
 /**
  * Created by Scott on 2016/12/9.
  *
@@ -27,7 +29,7 @@ public class DataFetcher {
 
     private static final String CITY_INFO_URL = "http://files.heweather.com/china-city-list.json";
     private static final String WEATHER_INFO_URL = "https://free-api.heweather.com/v5/";
-    private static final String API_KEY = "";
+    private static final String API_KEY = "3375511636534446af7884b0834a2fba";
 
     public DataFetcher() {}
 
@@ -84,4 +86,37 @@ public class DataFetcher {
         }
         return cityContainer;
     }
+
+    public ContentValues fetchNowWeather(String city) {
+        String result = "";
+        String url = WEATHER_INFO_URL + "now/?city=" + city + "&key=" + API_KEY;
+        ContentValues values = new ContentValues();
+        try {
+            result = getUrl(url);
+        } catch (IOException e) {
+            Log.e(TAG, "can't get data from internet!", e);
+        }
+        try {
+            JSONObject object = new JSONObject(result);
+            object = (object.getJSONArray("HeWeather5")).getJSONObject(0);
+            JSONObject basic = object.getJSONObject("basic");
+            JSONObject update = basic.getJSONObject("update");
+            JSONObject now = object.getJSONObject("now");
+            JSONObject cond = now.getJSONObject("cond");
+            JSONObject wind = now.getJSONObject("wind");
+            values.put(WeatherContract.WeaColumns.CITY_ID, basic.getString("id"));
+            values.put(WeatherContract.WeaColumns.CITY_NAME, basic.getString("city"));
+            values.put(WeatherContract.WeaColumns.LOC, update.getString("loc"));
+            values.put(WeatherContract.WeaColumns.UTC, update.getString("utc"));
+            values.put(WeatherContract.WeaColumns.CODE, cond.getString("code"));
+            values.put(WeatherContract.WeaColumns.TXT, cond.getString("txt"));
+            values.put(WeatherContract.WeaColumns.TMP, now.getString("tmp"));
+            values.put(WeatherContract.WeaColumns.DIR, wind.getString("dir"));
+        } catch (JSONException e) {
+            values = null;
+            Log.e(TAG, "can't parse json data!", e);
+        }
+        return values;
+    }
 }
+
